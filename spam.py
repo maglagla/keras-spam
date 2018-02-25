@@ -106,6 +106,24 @@ def test_predict(model, testtext, expected_label):
     
     return False
 
+def plot_accuracy(history):
+    pyplot.plot(history.history['acc'])
+    pyplot.plot(history.history['val_acc'])
+    pyplot.title('model accuracy')
+    pyplot.ylabel('accuracy')
+    pyplot.xlabel('epoch')
+    pyplot.legend(['training', 'validation'], loc='lower right')
+    pyplot.show()
+
+def plot_loss(history):
+    pyplot.plot(history.history['loss'])
+    pyplot.plot(history.history['val_loss'])
+    pyplot.title('model loss')
+    pyplot.ylabel('loss')
+    pyplot.xlabel('epoch')
+    pyplot.legend(['training', 'validation'], loc='upper right')
+    pyplot.show()
+
 # Start script
 
 # First split train lines from test lines
@@ -147,60 +165,16 @@ model.add(layers.Dense(8, activation='relu'))
 model.add(layers.Dense(1, activation='sigmoid'))
 model.compile(optimizer='rmsprop',loss='binary_crossentropy',metrics=['accuracy'])
 
-history = model.fit(x_train,y_train,epochs=8,batch_size=100,validation_split=0.5)
-
-
-
-
-
-epochs=range(1, 9)
-history_dict = history.history
+# Train the model
+history = model.fit(x_train,y_train,epochs=8,batch_size=100,validation_split=0.3)
 
 # summarize history for accuracy
-pyplot.plot(history.history['acc'])
-pyplot.plot(history.history['val_acc'])
-pyplot.title('model accuracy')
-pyplot.ylabel('accuracy')
-pyplot.xlabel('epoch')
-pyplot.legend(['training', 'validation'], loc='lower right')
-pyplot.show()
-
-pyplot.clf()
-acc_values = history_dict['acc']
-val_acc_values = history_dict['val_acc']
-pyplot.plot(epochs, acc_values, 'bo', label='Training acc')
-pyplot.plot(epochs, val_acc_values, 'b', label='Validation acc')
-pyplot.title('Training and validation accuracy')
-pyplot.xlabel('Epochs')
-pyplot.ylabel('Loss')
-pyplot.legend()
-pyplot.show()
+plot_accuracy(history)
 
 # summarize history for loss
-pyplot.plot(history.history['loss'])
-pyplot.plot(history.history['val_loss'])
-pyplot.title('model loss')
-pyplot.ylabel('loss')
-pyplot.xlabel('epoch')
-pyplot.legend(['training', 'validation'], loc='upper right')
-pyplot.show()
+plot_loss(history)
 
-# list all data in history
-print(history.history.keys())
-
-
-loss_values = history_dict['loss']
-val_loss_values = history_dict['val_loss']
-pyplot.plot(epochs, loss_values, 'bo', label='Training loss')
-pyplot.plot(epochs, val_loss_values, 'b', label='Validation loss')
-pyplot.title('Training and validation loss')
-pyplot.xlabel('Epochs')
-pyplot.ylabel('Loss')
-pyplot.legend()
-pyplot.show()
-
-
-
+# Evaluate the model
 results = model.evaluate(x_test, y_test)
 print(model.metrics_names)
 print('Test result: ', results)
